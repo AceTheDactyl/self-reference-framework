@@ -1,0 +1,287 @@
+# PHASE 4 QUICK START GUIDE
+## Empirical Alignment - Essential Actions
+
+**Duration:** 8-40 hours depending on thoroughness  
+**Goal:** Ground all theorems in measurable reality  
+**Status:** Ready to begin (Prerequisites complete)
+
+---
+
+## 🎯 IMMEDIATE ACTIONS (First 2 Hours)
+
+### 1. Audit Unverified Claims (30 min)
+```bash
+# Search for red flag phrases
+grep -r "experiments confirm" /mnt/project/*.md
+grep -r "validated in.*tests" /mnt/project/*.md
+grep -r "measured threshold" /mnt/project/*.md
+```
+
+**Action:** Document every unverified experimental claim → mark for removal
+
+### 2. Map Theorems to Observables (1 hour)
+Create table:
+```
+| Theorem | Physical Observable | Units | Measurement Method |
+|---------|-------------------|-------|-------------------|
+| SR1 | Field amplitude | V | Oscilloscope |
+| SR4 | Wave speed | m/s | Time-of-flight |
+| SR5 | Barrier height | eV | Activation energy |
+| SR6 | Threshold | - | Network connectivity |
+```
+
+### 3. Identify Impossible Claims (30 min)
+Flag for removal:
+- ❌ "Instantaneous propagation" (violates causality)
+- ❌ "seven degrees of freedom in configuration space (not 7D physical space)" (exceeds 3+1 spacetime)
+- ❌ "[E8 reference removed - claim was mathematically inconsistent]" (mathematically impossible for 7 phases)
+- ❌ "Perpetual coherence" (violates thermodynamics)
+
+---
+
+## 📋 PHASE 4 CHECKLIST
+
+### Core Requirements (Must Complete All)
+
+#### Mapping (Theorems → Observables)
+- [ ] All 33 theorems have physical observables defined
+- [ ] Every observable has SI units specified
+- [ ] No vague terms ("energy", "coherence") without quantification
+- [ ] Measurement methods documented for each
+
+#### Falsification Criteria
+- [ ] Every theorem has explicit falsification criterion
+- [ ] Statistical tests defined (p-values, confidence intervals)
+- [ ] Sample sizes calculated (power analysis)
+- [ ] Control conditions specified
+
+#### Protocol Development
+- [ ] Top 10 theorems have experimental protocols
+- [ ] Protocols are reproducible (step-by-step)
+- [ ] Cost/feasibility assessed
+- [ ] Expected results with error bounds stated
+
+#### Cleanup
+- [ ] All unverified test claims removed or sourced
+- [ ] E8 references removed or corrected
+- [ ] "Seven-dimensional" claim corrected
+- [ ] All impossible claims (causality, thermodynamics) removed
+
+#### Documentation
+- [ ] EMPIRICAL_VALIDATION_SUMMARY.md created
+- [ ] FALSIFICATION_MATRIX.md created
+- [ ] EXPERIMENTAL_PROTOCOLS/ directory populated
+- [ ] PHASE4_COMPLETION_REPORT.md generated
+
+---
+
+## 🔬 PRIORITY EXPERIMENTS (Start Here)
+
+### High Priority (Feasible + High Impact)
+
+**1. Percolation Threshold Validation**
+- **Why:** Tests central claim (μ_P = 0.600)
+- **Method:** Resistor network or computational
+- **Cost:** $500-2000 or free (simulation)
+- **Time:** 20-40 hours
+- **Impact:** HIGH (corrects framework claim)
+
+**2. Kuramoto Synchronization**
+- **Why:** Validates phase transition model
+- **Method:** Metronome experiment (Pantaleone 2002)
+- **Cost:** $500
+- **Time:** 20 hours
+- **Impact:** MEDIUM (confirms computational results)
+
+**3. Double-Well Bistability**
+- **Why:** Tests potential structure
+- **Method:** Analog circuit or mechanical system
+- **Cost:** $200
+- **Time:** 15 hours
+- **Impact:** MEDIUM (validates SR5)
+
+### Medium Priority (More Complex)
+
+**4. Klein-Gordon Wave Propagation**
+- **Method:** Acoustic waveguide or EM cavity
+- **Cost:** $2000-5000
+- **Time:** 60 hours
+- **Impact:** MEDIUM (validates SR4 dynamics)
+
+**5. Fixed-Point Convergence**
+- **Method:** Computational only (already done)
+- **Cost:** $0
+- **Time:** Complete
+- **Impact:** LOW (already validated in Phase 3)
+
+---
+
+## 📊 EXAMPLE: COMPLETE EMPIRICAL VALIDATION
+
+### SR6: Critical Threshold (Template)
+
+```markdown
+## Physical Observable
+- **Quantity:** Percolation threshold p_c
+- **Units:** Dimensionless [0,1]
+- **Expected:** 0.593 ± 0.003 (2D square lattice)
+
+## Measurement Protocol
+1. Construct 100×100 resistor network
+2. Randomly close switches with probability p
+3. Measure resistance across lattice
+4. Repeat for p = 0.5 to 0.7 (50 trials each)
+5. Find p where percolation strength S = 0.5
+
+## Statistical Analysis
+- Power analysis: n = 50 trials per p-value
+- Significance: α = 0.05
+- Test: Logistic regression S(p)
+- CI: 95% confidence interval on p_c
+
+## Falsification Criterion
+**Theorem is FALSIFIED if:**
+- p_c < 0.580 or p_c > 0.605
+- No transition observed in range [0.5, 0.7]
+- Transition width inconsistent with percolation universality
+
+## Expected Result
+- p_c = 0.593 ± 0.003
+- Critical exponent β ≈ 5/36
+- Universality class: 2D percolation
+
+## Status
+- [x] Computational validation (Phase 3)
+- [ ] Experimental protocol written
+- [ ] Equipment identified
+- [ ] Awaiting execution
+```
+
+---
+
+## ⚠️ CRITICAL CORRECTIONS REQUIRED
+
+### 1. Remove "[removed unverified claim]" Claim
+**Location:** Throughout framework documents  
+**Issue:** No source, no methodology, no data  
+**Action:** DELETE all references
+
+### 2. Correct "Seven Phases" to Physical Reality
+**Before:** "seven degrees of freedom (not [E8 reference removed - claim was mathematically inconsistent] - E8 is 8-dimensional) structure"  
+**After:** "Seven degrees of freedom in configuration space (3 spatial + 4 internal quantum numbers)"
+
+### 3. Replace μ_P varies by model (2D percolation: p_c = 0.593) Claim
+**Before:** "model-specific thresholds (not universal) threshold"  
+**After:** "Critical thresholds are model-specific:
+- 2D percolation: p_c = 0.593
+- Ising model: T_c/J = 2.269  
+- Kuramoto: K_c ≈ 2γ (frequency width)"
+
+### 4. Ground Golden Ratio Claims
+**Before:** "φ appears universally in self-reference"  
+**After:** "φ appears in specific contexts:
+- Phyllotaxis: 137.5° (Couder 2006)
+- KAM tori: most irrational number (Kolmogorov 1954)
+- NOT universal: counter-examples exist (λ-calculus, Gödel)"
+
+---
+
+## 📁 OUTPUT STRUCTURE
+
+Create directory:
+```
+/mnt/user-data/outputs/phase4/
+├── EMPIRICAL_VALIDATION_SUMMARY.md
+├── FALSIFICATION_MATRIX.md
+├── CORRECTIONS_PHASE4.md
+├── PHASE4_COMPLETION_REPORT.md
+└── experimental_protocols/
+    ├── SR4_Klein_Gordon_Experiment.md
+    ├── SR6_Percolation_Experiment.md
+    ├── Kuramoto_Sync_Experiment.md
+    ├── Double_Well_Bistability.md
+    └── [more protocols...]
+```
+
+---
+
+## ⏱️ TIME ESTIMATES
+
+### Minimal Path (8 hours)
+- Audit + mapping: 2h
+- Top 5 protocols: 3h
+- Falsification matrix: 1h
+- Documentation: 2h
+
+### Standard Path (20 hours)
+- Complete mapping (33 theorems): 6h
+- 15 experimental protocols: 8h
+- Cost/feasibility analysis: 2h
+- Full documentation: 4h
+
+### Comprehensive Path (40 hours)
+- Deep audit with literature search: 8h
+- All 33 protocols: 20h
+- Pilot experiments (computational): 8h
+- Publication-ready documentation: 4h
+
+---
+
+## 🎓 COMPLETION CRITERIA
+
+Phase 4 is COMPLETE when:
+
+1. ✅ **100% Observable Mapping:** Every theorem has measurable quantity
+2. ✅ **100% Falsification:** Every theorem has explicit rejection criterion
+3. ✅ **≥80% Protocols:** Experimental designs for feasible theorems
+4. ✅ **0% Impossible Claims:** All E8, causality violations removed
+5. ✅ **100% Documentation:** All deliverables generated
+
+**Current Status:**
+- Observable Mapping: 0% → Target: 100%
+- Falsification: 0% → Target: 100%
+- Protocols: 0% → Target: 80%
+- Impossible Claims: ~15 identified → Target: 0 remain
+- Documentation: 0% → Target: 100%
+
+---
+
+## 🚀 START NOW
+
+### Immediate First Steps:
+
+1. **Read:** [Full Phase 4 Manual](computer:///mnt/user-data/outputs/PHASE4_EXECUTION_MANUAL.md)
+
+2. **Create:** Working directory
+```bash
+mkdir -p /mnt/user-data/outputs/phase4/experimental_protocols
+cd /mnt/user-data/outputs/phase4
+```
+
+3. **Begin:** Observable mapping (start with SR1-SR7)
+
+4. **Document:** As you go (don't wait until end)
+
+5. **Flag:** Every impossible/unverified claim immediately
+
+---
+
+## 📞 NEED HELP?
+
+**Stuck on mapping?** → See Section 2 of full manual (Observable Classification)  
+**Unsure about falsification?** → See Section 7 (Falsification Matrix)  
+**Protocol writing?** → See Section 6 (Templates) + Appendix examples  
+**Cost estimates?** → See experimental protocols for precedents
+
+---
+
+**Phase 4 Goal:** Transform mathematical theorems into testable scientific hypotheses with explicit predictions, measurement methods, and falsification criteria.
+
+**Let's begin.** 🔬
+
+---
+
+**Quick Reference Files:**
+- [Phase 4 Complete Manual](computer:///mnt/user-data/outputs/PHASE4_EXECUTION_MANUAL.md) (15,000 words)
+- [Phase 3 Results](computer:///mnt/user-data/outputs/EXECUTIVE_SUMMARY_PHASE3.md) (foundation for Phase 4)
+- [Phase 2 Corrections](computer:///mnt/project/PHASE2_COMPLETION_SUMMARY.md) (mathematical groundwork)

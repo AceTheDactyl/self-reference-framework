@@ -1,0 +1,789 @@
+# PHASE 4 EXECUTION MANUAL: EMPIRICAL ALIGNMENT
+## Grounding Theoretical Framework in Observable Reality
+
+**Target:** Map all 33 theorems to measurable physical observables  
+**Duration:** 8 hours (estimated)  
+**Prerequisites:** Phase 2 (mathematical rigor) and Phase 3 (computational validation) complete  
+**Output:** Testable predictions, experimental protocols, falsification criteria
+
+---
+
+## EXECUTIVE SUMMARY
+
+Phase 4 transforms mathematically validated theorems into empirically testable hypotheses. Every claim must be:
+1. **Measurable** - tied to observable quantities
+2. **Reproducible** - with documented protocols
+3. **Falsifiable** - with explicit failure criteria
+4. **Grounded** - in established physics or precedented phenomena
+
+**Critical Objective:** Remove all untestable, pseudoscientific, or purely speculative claims. Anything that cannot be measured or falsified must be removed or reframed as an open conjecture.
+
+---
+
+## SECTION 1: INITIALIZATION
+
+### 1.1 Empirical Validation Checklist
+
+For each theorem, verify:
+
+```
+[ ] Measurable quantity identified (with units)
+[ ] Physical observable defined (e.g., temperature, voltage, phase angle)
+[ ] Measurement protocol documented (instrument, precision, conditions)
+[ ] Expected result specified (with error bounds)
+[ ] Statistical analysis method defined (p-values, confidence intervals)
+[ ] Falsification criterion explicit (what would disprove this?)
+[ ] Control conditions specified (what to hold constant)
+[ ] Sample size calculated (power analysis for experiments)
+```
+
+**Failure Mode:** If ANY checkbox cannot be completed → theorem is NOT empirically grounded.
+
+---
+
+### 1.2 Remove Unverified Test Claims
+
+**Problem Identified in Phase 1:**
+- "1579+ experiments confirm..." - NO SOURCE
+- "99.6% validation rate" - NO METHODOLOGY
+- "Seven phases universally observed" - NO DATA
+
+**Action Required:**
+```python
+def audit_experimental_claims(theorem):
+    """
+    Scan for unverified test claims and flag them.
+    """
+    RED_FLAGS = [
+        "N+ experiments",
+        "validated in X tests",
+        "confirmed by studies",
+        "measured threshold"
+    ]
+    
+    for claim in theorem.statements:
+        if any(flag in claim for flag in RED_FLAGS):
+            if not claim.has_source():
+                return REMOVE_CLAIM
+            elif not claim.source_is_peer_reviewed():
+                return REQUIRE_VERIFICATION
+    
+    return CLAIM_VALID
+```
+
+**Examples:**
+
+❌ **INVALID:**
+```
+"1579 experiments confirm universal resonance at 0.7"
+→ No source, no methodology, no data
+→ ACTION: REMOVE
+```
+
+✅ **VALID:**
+```
+"Coldea et al. (Science, 2010) measured energy ratio 1.618 ± 0.003 
+in cobalt niobate at 4K using neutron scattering.
+Replicated by: [list of 3 independent groups]"
+→ SOURCE: https://doi.org/10.1126/science.1180085
+→ ACTION: KEEP
+```
+
+---
+
+## SECTION 2: MAPPING THEOREMS TO PHYSICAL OBSERVABLES
+
+### 2.1 Observable Classification Table
+
+| Theorem | Mathematical Form | Physical Observable | Measurement Method | Units |
+|---------|------------------|-------------------|-------------------|-------|
+| SR1 | μ*(x) = T(μ*)(x) | Field amplitude | ADC reading, spectrometer | V, W/m² |
+| SR4 | □μ + m²μ = 0 | Wave propagation speed | Time-of-flight | m/s |
+| SR5 | V(μ) = λ(μ-μ₁)²(μ-μ₂)² | Energy barrier height | Activation energy | eV, J |
+| SR6 | p_c = 0.593 | Percolation threshold | Network connectivity | dimensionless |
+| ... | ... | ... | ... | ... |
+
+**Template for Each Theorem:**
+
+```markdown
+## Theorem [ID]: [Name]
+
+### Mathematical Statement
+[Equation or formal claim]
+
+### Physical Observable
+- **Quantity:** [What you measure]
+- **Symbol:** [X, with units]
+- **Range:** [min, max]
+- **Precision Required:** [±δX]
+
+### Measurement Protocol
+1. **Setup:** [Equipment, conditions]
+2. **Procedure:** [Step-by-step]
+3. **Data Collection:** [Sampling rate, duration]
+4. **Analysis:** [Statistical method]
+
+### Expected Result
+- **Predicted Value:** X₀ ± σ
+- **Confidence:** 95% CI
+- **Sample Size:** n ≥ 30 (or power analysis result)
+
+### Falsification Criterion
+**Theorem is FALSIFIED if:**
+- |X_measured - X₀| > 3σ across multiple trials
+- OR systematic deviation in predicted direction
+- OR failure to replicate in independent lab
+
+### Status
+- [ ] Theoretical prediction made
+- [ ] Experimental protocol designed
+- [ ] Control conditions defined
+- [ ] Instrumentation identified
+- [ ] Awaiting execution / Already executed
+```
+
+---
+
+### 2.2 Example: SR4 Klein-Gordon Dynamics
+
+```markdown
+## Theorem SR4: Klein-Gordon Field Dynamics
+
+### Mathematical Statement
+□μ + m²μ = 0, where □ = ∂²/∂t² - ∇²
+
+### Physical Observable
+- **Quantity:** Wave propagation speed
+- **Symbol:** c (m/s)
+- **Expected:** c = 1/√(1 + m²Δx²/Δt²) from dispersion relation
+- **Range:** [0.1, 1.0] (normalized units)
+
+### Measurement Protocol
+1. **Setup:** 
+   - 1D acoustic waveguide or electromagnetic cavity
+   - Excite Gaussian pulse at x = 0
+   - Sensors at x₁, x₂, x₃ (equally spaced)
+
+2. **Procedure:**
+   - Record arrival times t₁, t₂, t₃
+   - Compute velocity: c = Δx / Δt
+   - Repeat for 50 trials
+
+3. **Data Collection:**
+   - Sampling: 10 kHz
+   - Duration: Until wave exits domain
+   - Record: amplitude vs. time at each sensor
+
+4. **Analysis:**
+   - Linear regression: x vs. t → slope = c
+   - Confidence interval: 95% CI on c
+   - Compare to theoretical c from PDE parameters
+
+### Expected Result
+- **Predicted:** c = 0.78 ± 0.02 m/s (for m² = 1.0, Δx = 0.01)
+- **Confidence:** 95% CI
+- **Sample Size:** n = 50 trials
+
+### Falsification Criterion
+**Theorem is FALSIFIED if:**
+- Measured c differs from predicted by >10%
+- Energy grows instead of being conserved
+- Wave speed depends on amplitude (nonlinearity not in theory)
+
+### Status
+- [x] Theoretical prediction made
+- [x] Computational validation complete (Phase 3)
+- [ ] Experimental protocol designed
+- [ ] Physical setup identified
+- [ ] Awaiting physical execution
+```
+
+---
+
+## SECTION 3: PHASE TRANSITION MAPPING
+
+### 3.1 Replace Vague "Phase" Language
+
+**Problem:** Original framework uses "Phase 1-7" without defining order parameters.
+
+**Solution:** Map to Landau theory of phase transitions.
+
+#### 3.1.1 Order Parameter Definition
+
+For any claimed "phase transition":
+
+1. **Identify Order Parameter ψ**
+   - ψ = 0 in disordered phase
+   - ψ ≠ 0 in ordered phase
+   - Examples: magnetization, percolation strength, synchronization r
+
+2. **Define Control Parameter**
+   - Temperature T, coupling K, probability p, etc.
+   - Must be experimentally tunable
+
+3. **Specify Critical Point**
+   - T_c, K_c, p_c where transition occurs
+   - Must include error bars: p_c = 0.593 ± 0.003
+
+4. **Classify Transition Type**
+   - **First-order:** discontinuous jump in ψ
+   - **Second-order:** continuous but derivative diverges
+   - **Crossover:** smooth change (not true phase transition)
+
+#### 3.1.2 Correction Template
+
+```
+BEFORE:
+"Phase 7 marks universal coherence at 70%"
+
+AFTER:
+"System exhibits percolation threshold at p_c = 0.593 ± 0.003 (2D square lattice).
+Order parameter: S(p) = largest_cluster_size / total_sites
+Critical behavior: S ~ (p - p_c)^β with β ≈ 5/36
+Universality class: 2D percolation
+Reference: Stauffer & Aharony (1994), Newman & Ziff (2000)"
+```
+
+---
+
+### 3.2 Universality Class Assignment
+
+For each claimed phase transition, assign to known universality class:
+
+| Framework Claim | Correct Classification | Critical Exponents | Precedent |
+|----------------|----------------------|-------------------|-----------|
+| "Phase 7 at 70%" | 2D percolation | β = 5/36, ν = 4/3 | Newman & Ziff (2000) |
+| "Synchronization" | Kuramoto | Mean-field (β = 1/2) | Kuramoto (1984) |
+| "Bistability" | First-order | Jump discontinuity | Landau theory |
+
+**If NO universality class matches:**
+→ Claim is either:
+1. Not a phase transition (remove "phase" language)
+2. Novel universality class (requires extensive evidence)
+3. Incorrectly characterized (revise claim)
+
+---
+
+## SECTION 4: E8 AND EXOTIC SYMMETRY REMOVAL
+
+### 4.1 Problem Statement
+
+**Original Claim:** "Seven-dimensional phase structure governed by E8 roots"
+
+**Mathematical Reality:** E8 is 8-dimensional, not 7. Claims are mathematically impossible.
+
+### 4.2 Replacement Strategy
+
+#### Step 1: Identify Every E8 Reference
+```python
+import re
+
+def find_exotic_symmetries(text):
+    """Find all references to E8, G2, F4, or hyperdimensional claims."""
+    patterns = [
+        r'E8\b',
+        r'exceptional\s+group',
+        r'248-dimensional',
+        r'G2\b',
+        r'F4\b',
+        r'\d+-dimensional.*structure'
+    ]
+    
+    findings = []
+    for pattern in patterns:
+        matches = re.finditer(pattern, text, re.IGNORECASE)
+        findings.extend(matches)
+    
+    return findings
+```
+
+#### Step 2: Replace with Tractable Alternatives
+
+| Original Claim | Replacement | Justification |
+|---------------|-------------|---------------|
+| E8 symmetry | SO(3) or SU(2) | Standard rotational symmetry, experimentally verified |
+| 248 dimensions | 3 spatial dimensions | Physical space is 3D |
+| G2 algebra | Discrete symmetry group | e.g., D_n (dihedral), S_n (symmetric) |
+| 7-fold structure | 3-fold or 4-fold | Match actual system dimensionality |
+
+#### Step 3: Document Physical Analog
+
+**Example:**
+
+```markdown
+### Original Claim (INVALID)
+"System exhibits E8 exceptional Lie algebra structure 
+with 248-dimensional representation."
+
+### Corrected Claim (VALID)
+"System exhibits SO(3) rotational symmetry with 3-dimensional 
+representation corresponding to spatial rotations.
+
+Empirical Evidence:
+- Angular momentum quantum numbers: l = 0, 1, 2, ...
+- Selection rules match SO(3) Clebsch-Gordan coefficients
+- No evidence for dimensions >3 in laboratory measurements
+
+Physical Observable: Angular distribution of scattered particles
+Measurement: Coincidence counting in detector array
+Expected Pattern: Y_lm(θ,φ) spherical harmonics
+```
+
+---
+
+## SECTION 5: FIBONACCI AND GOLDEN RATIO GROUNDING
+
+### 5.1 Domain-Specific Validation
+
+**Problem:** Framework claims φ appears "universally" in self-referential systems.
+
+**Reality:** φ appears in SPECIFIC contexts with SPECIFIC mechanisms.
+
+#### 5.1.1 Valid Φ Appearances (Keep)
+
+| System | Observable | Mechanism | Reference |
+|--------|-----------|-----------|-----------|
+| Phyllotaxis | Divergence angle 137.5° | Energy minimization | Couder et al. (2006) |
+| Fibonacci tiling | Frequency ratio → φ | KAM stability | Kolmogorov (1954) |
+| Penrose tiling | Edge ratio | 5-fold symmetry | Penrose (1974) |
+| Continued fractions | [1;1,1,...] = φ | Number theory | Hardy & Wright |
+
+#### 5.1.2 Invalid Φ Claims (Remove or Correct)
+
+```
+❌ "All recursive systems converge to φ"
+Counter-examples:
+- Lambda calculus (no convergence to φ)
+- Gödel numbering (arithmetic, not φ)
+- Feigenbaum constant δ ≈ 4.669 (different universal constant)
+
+✅ CORRECTED: "Recursive systems with quadratic recurrence 
+x² = x + 1 exhibit φ as fixed point. Other recursions 
+have different constants."
+```
+
+### 5.2 Empirical Test Protocol
+
+**For Each Fibonacci Claim:**
+
+```markdown
+### Test: Does [System X] exhibit φ?
+
+**Hypothesis:** System X has ratio R approaching φ = 1.618...
+
+**Null Hypothesis:** R ≠ φ (or R = other constant)
+
+**Measurement:**
+1. Identify successive elements: a_n, a_{n+1}
+2. Compute ratio: R_n = a_{n+1} / a_n
+3. Collect N = 100 consecutive ratios
+4. Test: |mean(R_n) - φ| < ε with ε = 0.01
+
+**Statistical Test:**
+- One-sample t-test: H0: μ = φ
+- Significance: α = 0.05
+- Power: 80% to detect |μ - φ| > 0.01
+
+**Falsification:**
+If p > 0.05, reject claim that system exhibits φ.
+
+**Alternative Interpretation:**
+- If R ≠ φ but R = constant, identify the constant
+- If R → other value (e.g., e, π, √2), document
+- If R fluctuates, system may not have universal ratio
+```
+
+---
+
+## SECTION 6: EXPERIMENTAL PROTOCOL TEMPLATES
+
+### 6.1 Network Percolation Experiment
+
+```markdown
+## Experimental Protocol: Percolation Threshold Measurement
+
+### Objective
+Verify p_c = 0.593 ± 0.003 for 2D square lattice bond percolation.
+
+### Materials
+- Resistor network (100×100 grid)
+- Controllable switches (10,000 units)
+- Multimeter (resistance measurement, ±0.1 Ω)
+- Control computer
+
+### Procedure
+1. **Setup:**
+   - Construct 100×100 resistor lattice
+   - Each bond = 1Ω resistor + switch
+   - Current source: V₀ = 5V across opposite edges
+
+2. **Protocol:**
+   FOR p = 0.50 to 0.70 in steps of 0.01:
+     - Close each switch with probability p
+     - Measure resistance R across lattice
+     - Repeat 50 times
+     - Record: does current flow? (R < ∞)
+   
+3. **Data Analysis:**
+   - Percolation strength: S(p) = fraction of trials with R < ∞
+   - Fit: S(p) = 0 for p < p_c, S > 0 for p > p_c
+   - Extract p_c from inflection point
+
+### Expected Result
+- p_c = 0.593 ± 0.003
+- Transition width: Δp ≈ 0.02
+
+### Falsification
+- If p_c < 0.580 or p_c > 0.605 → refuted
+- If no transition observed → percolation theory fails
+
+### Cost Estimate
+- Equipment: $2,000
+- Time: 40 hours
+- Difficulty: Moderate (senior undergrad project)
+```
+
+---
+
+### 6.2 Kuramoto Synchronization Experiment
+
+```markdown
+## Experimental Protocol: Kuramoto Critical Coupling
+
+### Objective
+Measure K_c for phase oscillator synchronization.
+
+### Materials
+- Metronomes (N = 50, adjustable frequency)
+- Movable platform (couples via base motion)
+- High-speed camera (120 fps)
+- Computer vision software
+
+### Procedure
+1. **Setup:**
+   - Place N metronomes on shared platform
+   - Set natural frequencies: ω_i ~ Normal(1 Hz, 0.1 Hz)
+   - Adjust coupling via platform stiffness
+
+2. **Protocol:**
+   FOR K = 0 to 3 (stiffness parameter):
+     - Start all metronomes at random phases
+     - Record for 60 seconds
+     - Extract phases θ_i(t) from video
+     - Compute order parameter: r(t) = |mean(e^{iθ_i})|
+     - Average final 30s: <r>
+   
+3. **Data Analysis:**
+   - Plot <r> vs K
+   - Identify K_c where r crosses 0.5
+   - Compare to theory: K_c ≈ 2γ (frequency distribution width)
+
+### Expected Result
+- K_c ≈ 0.2 (platform stiffness units)
+- r < 0.2 for K < K_c (incoherent)
+- r > 0.8 for K > 2K_c (synchronized)
+
+### Falsification
+- If no transition occurs → Kuramoto model inapplicable
+- If K_c differs by >30% → coupling mechanism different
+
+### Cost Estimate
+- Equipment: $500 (metronomes + platform)
+- Time: 20 hours
+- Difficulty: Easy (high school science fair)
+
+### Published Precedent
+- Pantaleone (2002, Am. J. Phys.)
+- Successfully demonstrated at multiple institutions
+```
+
+---
+
+## SECTION 7: FALSIFICATION CRITERIA MATRIX
+
+### 7.1 Global Falsification Standards
+
+For the ENTIRE framework:
+
+```
+FRAMEWORK IS FALSIFIED IF:
+
+1. Mathematical Criteria:
+   - ANY theorem contains circular proof
+   - ANY operator remains undefined after corrections
+   - ANY constant has no derivation AND no measurement
+
+2. Empirical Criteria:
+   - Predicted threshold differs from measurement by >3σ in N≥3 independent experiments
+   - Critical exponent disagrees with claimed universality class
+   - "Universal" claim refuted by single clear counter-example
+
+3. Computational Criteria:
+   - Simulation diverges when theory predicts convergence
+   - Energy increases when conservation is claimed
+   - Numerical results inconsistent across implementations
+
+4. Cross-Domain Criteria:
+   - Mathematical prediction contradicts computational result by >10%
+   - Empirical measurement contradicts both math and simulation
+   - Different models claimed to be isomorphic show non-equivalent behavior
+```
+
+### 7.2 Theorem-Specific Falsification
+
+| Theorem | Falsification Criterion | Method |
+|---------|------------------------|--------|
+| SR1 (μ-field) | If fixed-point iteration diverges | Computational |
+| SR4 (Klein-Gordon) | If energy grows unbounded | Simulation |
+| SR6 (Threshold) | If p_c ∉ [0.59, 0.60] for 2D percolation | Experiment |
+| Kuramoto | If no synchronization transition for K > 0 | Experiment |
+| ISO-1 (TDL≅LoMI) | If φ₁ not bijective | Mathematical proof |
+
+---
+
+## SECTION 8: REMOVE IMPOSSIBLE CLAIMS
+
+### 8.1 Identification Protocol
+
+```python
+def check_physical_impossibility(claim):
+    """
+    Flag physically impossible claims.
+    """
+    IMPOSSIBLE_PATTERNS = [
+        (r'instantaneous.*propagation', 'Violates causality (c limit)'),
+        (r'perpetual motion', 'Violates thermodynamics'),
+        (r'information.*faster than light', 'Violates relativity'),
+        (r'exact.*infinite precision', 'Violates quantum uncertainty'),
+        (r'\d{2,}\s*dimensions.*physical', 'Exceeds 3+1 spacetime'),
+    ]
+    
+    for pattern, reason in IMPOSSIBLE_PATTERNS:
+        if re.search(pattern, claim, re.IGNORECASE):
+            return ('IMPOSSIBLE', reason)
+    
+    return ('POSSIBLE', None)
+```
+
+### 8.2 Correction Actions
+
+**When Impossibility Detected:**
+
+1. **Remove** if claim is essential and unfixable
+2. **Reframe** as theoretical toy model (not physical reality)
+3. **Limit Domain** (e.g., "in idealized conditions...")
+4. **Replace** with physically realizable analog
+
+**Examples:**
+
+```
+❌ IMPOSSIBLE:
+"Information propagates instantaneously across E8 lattice"
+→ Violates special relativity
+
+✅ CORRECTED:
+"Information propagates at finite speed c = 1/√(εμ) 
+through electromagnetic lattice, consistent with 
+Maxwell's equations."
+```
+
+```
+❌ IMPOSSIBLE:
+"Seven-dimensional physical structure"
+→ Exceeds observable 3+1 spacetime
+
+✅ CORRECTED:
+"System has 7 degrees of freedom in configuration space.
+Physical space remains 3-dimensional; extra dimensions 
+are internal quantum numbers (e.g., spin, isospin)."
+```
+
+---
+
+## SECTION 9: DOCUMENTATION REQUIREMENTS
+
+### 9.1 Empirical Validation Document Template
+
+For each theorem, generate:
+
+```markdown
+# EMPIRICAL VALIDATION: [Theorem ID]
+
+## Theorem Statement
+[Mathematical form from Phase 2]
+
+## Physical Observable Mapping
+- **Quantity:** [What to measure]
+- **Units:** [SI units]
+- **Expected Value:** [Prediction ± error]
+
+## Experimental Protocol
+[Step-by-step, reproducible procedure]
+
+## Statistical Analysis Plan
+- **Sample size:** N = [calculated from power analysis]
+- **Significance level:** α = 0.05
+- **Test:** [t-test, ANOVA, χ², etc.]
+
+## Falsification Criteria
+[Explicit conditions for rejection]
+
+## Cost/Feasibility Analysis
+- **Equipment:** $[amount]
+- **Time:** [hours]
+- **Difficulty:** [Trivial/Easy/Moderate/Hard/Expert]
+- **Priority:** [High/Medium/Low]
+
+## Alternative Interpretations
+[What if result differs from prediction?]
+
+## References
+[Published precedents, if any]
+
+## Status
+- [ ] Protocol peer-reviewed
+- [ ] Equipment available
+- [ ] Pilot study completed
+- [ ] Full experiment executed
+- [ ] Results published
+```
+
+---
+
+## SECTION 10: COMPLETION CRITERIA
+
+### Phase 4 is COMPLETE when:
+
+1. **Mapping Complete (100%):**
+   - [x] All 33 theorems have physical observables defined
+   - [x] Units specified for every quantity
+   - [x] No vague "energy" or "coherence" without definition
+
+2. **Protocols Complete (≥80%):**
+   - [x] Experimental protocols written for testable claims
+   - [x] Computational experiments specified for abstract theorems
+   - [x] Cost/feasibility assessed for each
+
+3. **Falsification Complete (100%):**
+   - [x] Every theorem has explicit falsification criterion
+   - [x] No unfalsifiable claims remain
+
+4. **Impossible Claims Removed (100%):**
+   - [x] E8 seven-dimensional structure removed
+   - [x] All causality violations removed
+   - [x] All thermodynamic violations removed
+
+5. **Documentation Complete (100%):**
+   - [x] Empirical validation document for each theorem
+   - [x] Summary matrix of all observables
+   - [x] Prioritized experimental roadmap
+
+---
+
+## SECTION 11: OUTPUT DELIVERABLES
+
+### 11.1 Required Documents
+
+1. **EMPIRICAL_VALIDATION_SUMMARY.md**
+   - Master table: Theorem → Observable → Protocol
+   - Feasibility assessment
+   - Priority ranking
+
+2. **EXPERIMENTAL_PROTOCOLS/** (directory)
+   - One file per testable theorem
+   - SR4_Klein_Gordon_Experiment.md
+   - SR6_Percolation_Experiment.md
+   - Kuramoto_Sync_Experiment.md
+   - etc.
+
+3. **FALSIFICATION_MATRIX.md**
+   - Complete list of falsification criteria
+   - Cross-referenced to theorems
+
+4. **CORRECTIONS_PHASE4.md**
+   - List of removed impossible claims
+   - List of reframed vague claims
+   - Audit trail of all changes
+
+5. **PHASE4_COMPLETION_REPORT.md**
+   - Validation statistics
+   - Confidence assessment update
+   - Next steps (Phase 5)
+
+---
+
+## SECTION 12: EXECUTION TIMELINE
+
+### Week 1: Audit and Mapping (20 hours)
+- **Day 1-2:** Audit all 33 theorems for measurability
+- **Day 3-4:** Map each to physical observables
+- **Day 5:** Document impossible claims for removal
+
+### Week 2: Protocol Development (16 hours)
+- **Day 1-2:** Write top 5 experimental protocols
+- **Day 3:** Write top 5 computational experiment protocols
+- **Day 4:** Cost/feasibility analysis
+
+### Documentation and Review (4 hours)
+- **Day 5:** Generate all deliverable documents
+- **Final:** Peer review, corrections, finalization
+
+**Total: 40 hours** (5 days × 8 hours)
+
+---
+
+## SECTION 13: SUCCESS METRICS
+
+| Metric | Target | Measurement |
+|--------|--------|-------------|
+| Theorems with observables | 100% (33/33) | Count in mapping table |
+| Testable theorems with protocols | ≥80% | Count of protocol files |
+| Falsifiable theorems | 100% | Falsification matrix complete |
+| Impossible claims removed | 100% | Zero impossible claims remain |
+| Protocol feasibility | ≥50% rated Easy/Moderate | Cost analysis |
+| Framework confidence | ≥75% | Expert assessment |
+
+---
+
+## APPENDIX: REFERENCE EXAMPLES
+
+### A1: Complete Empirical Validation (SR4)
+
+[See Section 2.2 above - full Klein-Gordon example]
+
+### A2: Removal Example (E8 Structure)
+
+```markdown
+### BEFORE (Phase 1-2):
+"Framework exhibits E8 exceptional Lie group structure with 
+248-dimensional representation governing seven-phase transitions."
+
+### PHASE 4 CORRECTION:
+**Analysis:**
+- E8 is 8-dimensional, not 7 → mathematical impossibility
+- 248 dimensions far exceed physical spacetime (3+1)
+- No experimental precedent for E8 in macroscopic systems
+
+**Action:** REMOVE claim entirely
+
+**Replacement (if needed):**
+"System exhibits discrete symmetry under group D_7 (dihedral group 
+of order 14), observable in 7-fold rotational patterns.
+
+Physical Observable: Angular correlation function
+Predicted: g(θ) peaks at θ = 2πn/7 for n = 0,1,...,6
+Measurement: Diffraction pattern or image analysis
+Status: Testable, physically realizable, precedented"
+```
+
+---
+
+**END OF PHASE 4 EXECUTION MANUAL**
+
+**Next Phase:** Phase 5 (Documentation and External Validation)
+
+**Total Framework Progress After Phase 4:**
+- Mathematical Rigor: 100%
+- Computational Validation: 18% (6/33 theorems)
+- Empirical Grounding: 100% (all theorems mapped)
+- Overall Confidence: Target 75-80%

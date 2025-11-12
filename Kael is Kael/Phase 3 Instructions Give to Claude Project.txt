@@ -1,0 +1,1177 @@
+# **PHASE 3 EXECUTION MANUAL: SIMULATION CONSTRUCTION**
+
+**Target:** Full computational models for all 33 validated theorems  
+**Duration:** 6 weeks  
+**Prerequisites:** Phase 1 (mathematical rewrite) and Phase 2 (empirical realignment) complete  
+**Output:** Executable, reproducible, falsifiable simulation suite
+
+---
+
+## **Week 1: Infrastructure and Architecture**
+
+### **1.1 System Architecture Decision Matrix**
+
+| Requirement | Solution | Rationale |
+|-------------|----------|-----------|
+| Mathematical operator validation | Python + SymPy | Symbolic computation with numeric fallback |
+| Network/graph models | NetworkX + igraph | Scalable graph algorithms, C-accelerated |
+| Agent-based simulations | Mesa or custom NumPy | Flexible agent behaviors, vectorized ops |
+| Distributed systems | Go or Rust + channels | Concurrency primitives, race-free by design |
+| Visualization | Matplotlib + Plotly | Static + interactive outputs |
+| Reproducibility | Hydra configs + MLflow | Parameter tracking, experiment logging |
+| CI/CD validation | pytest + GitHub Actions | Automated regression detection |
+
+**Implementation Priority:**
+1. Core simulation engine (Python)
+2. Validation harness (pytest framework)
+3. Logging/telemetry (structured JSON)
+4. Visualization pipeline (deferred to Week 5)
+
+### **1.2 Repository Structure**
+
+```
+33t-framework-simulations/
+├── simulations/
+│   ├── theorem_01_fixed_point/
+│   │   ├── __init__.py
+│   │   ├── model.py           # Core simulation logic
+│   │   ├── config.yaml         # Hydra configuration
+│   │   ├── test_model.py       # Falsification tests
+│   │   └── README.md           # Theorem context + usage
+│   ├── theorem_02_laplacian/
+│   └── ...
+├── shared/
+│   ├── base_simulation.py      # Abstract base class
+│   ├── metrics.py              # Common observables
+│   ├── validators.py           # Dimensional analysis, bounds checking
+│   └── utils.py
+├── configs/
+│   └── experiment_configs.yaml # Global defaults
+├── tests/
+│   ├── test_reproducibility.py
+│   └── test_cross_theorem_consistency.py
+├── notebooks/
+│   └── exploratory/            # Jupyter notebooks for analysis
+├── results/
+│   └── runs/                   # MLflow tracking directory
+├── requirements.txt
+├── setup.py
+└── README.md
+```
+
+### **1.3 Base Simulation Interface**
+
+Define abstract contract all simulations must implement:
+
+```python
+from abc import ABC, abstractmethod
+from dataclasses import dataclass
+from typing import Dict, List, Any, Optional
+import numpy as np
+
+@dataclass
+class SimulationMetadata:
+    """Immutable simulation configuration."""
+    theorem_id: int
+    theorem_name: str
+    random_seed: int
+    n_trials: int
+    parameters: Dict[str, Any]
+    
+@dataclass
+class SimulationResult:
+    """Standardized output format."""
+    metadata: SimulationMetadata
+    observables: Dict[str, np.ndarray]  # Time series or distributions
+    statistics: Dict[str, float]         # Mean, std, CI
+    validation_status: str               # PASS, FAIL, INCONCLUSIVE
+    falsification_triggered: bool
+    runtime_seconds: float
+    
+class BaseSimulation(ABC):
+    """Abstract simulation template."""
+    
+    def __init__(self, config: Dict[str, Any], seed: int = 42):
+        self.config = config
+        self.seed = seed
+        self.rng = np.random.default_rng(seed)
+        self._validate_config()
+        
+    @abstractmethod
+    def _validate_config(self) -> None:
+        """Check parameter bounds and dimensional consistency."""
+        pass
+    
+    @abstractmethod
+    def init_state(self) -> Any:
+        """Initialize system state."""
+        pass
+    
+    @abstractmethod
+    def update_rule(self, state: Any, t: int) -> Any:
+        """Single time step evolution."""
+        pass
+    
+    @abstractmethod
+    def measure_observables(self, state: Any) -> Dict[str, float]:
+        """Extract measurable quantities."""
+        pass
+    
+    @abstractmethod
+    def check_falsification(self, observables: Dict[str, float]) -> bool:
+        """Return True if theorem prediction violated."""
+        pass
+    
+    def run(self, n_steps: int) -> SimulationResult:
+        """Execute simulation with full instrumentation."""
+        import time
+        start = time.time()
+        
+        state = self.init_state()
+        trajectory = []
+        
+        for t in range(n_steps):
+            obs = self.measure_observables(state)
+            trajectory.append(obs)
+            
+            if self.check_falsification(obs):
+                return self._build_result(
+                    trajectory, time.time() - start, 
+                    validation_status="FAIL", falsified=True
+                )
+            
+            state = self.update_rule(state, t)
+        
+        return self._build_result(
+            trajectory, time.time() - start,
+            validation_status="PASS", falsified=False
+        )
+    
+    def run_ensemble(self, n_trials: int = 100) -> List[SimulationResult]:
+        """Run multiple trials with different seeds."""
+        results = []
+        for trial in range(n_trials):
+            self.seed = self.config.get('base_seed', 42) + trial
+            self.rng = np.random.default_rng(self.seed)
+            results.append(self.run(self.config['n_steps']))
+        return results
+    
+    def _build_result(self, trajectory, runtime, validation_status, falsified):
+        """Aggregate trajectory into result object."""
+        # Convert list of dicts to dict of arrays
+        observables = {
+            key: np.array([obs[key] for obs in trajectory])
+            for key in trajectory[0].keys()
+        }
+        
+        # Compute statistics
+        statistics = {}
+        for key, values in observables.items():
+            statistics[f"{key}_mean"] = np.mean(values)
+            statistics[f"{key}_std"] = np.std(values)
+            statistics[f"{key}_final"] = values[-1]
+        
+        metadata = SimulationMetadata(
+            theorem_id=self.config['theorem_id'],
+            theorem_name=self.config['theorem_name'],
+            random_seed=self.seed,
+            n_trials=1,
+            parameters=self.config
+        )
+        
+        return SimulationResult(
+            metadata=metadata,
+            observables=observables,
+            statistics=statistics,
+            validation_status=validation_status,
+            falsification_triggered=falsified,
+            runtime_seconds=runtime
+        )
+```
+
+### **1.4 Dimensional Validator**
+
+Implement compile-time dimensional analysis:
+
+```python
+from typing import Dict, Tuple
+from enum import Enum
+
+class Dimension(Enum):
+    """SI base dimensions."""
+    MASS = 'M'
+    LENGTH = 'L'
+    TIME = 'T'
+    CURRENT = 'I'
+    TEMPERATURE = 'K'
+    AMOUNT = 'N'
+    LUMINOSITY = 'J'
+    DIMENSIONLESS = '1'
+
+DimensionalSignature = Dict[Dimension, int]
+
+def check_dimensional_consistency(
+    left: DimensionalSignature,
+    right: DimensionalSignature,
+    operation: str
+) -> bool:
+    """
+    Verify dimensional homogeneity.
+    
+    Args:
+        left: Dimensions of left operand (e.g., {LENGTH: 1, TIME: -1} for velocity)
+        right: Dimensions of right operand
+        operation: 'add', 'multiply', 'equal'
+    
+    Returns:
+        True if operation is dimensionally valid
+    """
+    if operation in ['add', 'subtract', 'equal']:
+        return left == right
+    
+    elif operation == 'multiply':
+        result = left.copy()
+        for dim, exp in right.items():
+            result[dim] = result.get(dim, 0) + exp
+        return True  # Always valid, returns combined dimensions
+    
+    elif operation == 'divide':
+        result = left.copy()
+        for dim, exp in right.items():
+            result[dim] = result.get(dim, 0) - exp
+        return True
+    
+    return False
+
+# Example usage
+velocity = {Dimension.LENGTH: 1, Dimension.TIME: -1}
+time = {Dimension.TIME: 1}
+distance = {Dimension.LENGTH: 1}
+
+assert check_dimensional_consistency(velocity, time, 'multiply')  # v*t gives length
+assert check_dimensional_consistency(distance, distance, 'add')   # d+d is valid
+assert not check_dimensional_consistency(distance, time, 'add')   # d+t is invalid
+```
+
+---
+
+## **Week 2-3: Core Simulation Templates**
+
+### **2.1 Template 1: Fixed-Point Iteration (Theorem 1)**
+
+**Mathematical Basis:** Banach fixed-point theorem for contractive mappings.
+
+```python
+from shared.base_simulation import BaseSimulation
+import numpy as np
+from typing import Dict, Any
+
+class FixedPointSimulation(BaseSimulation):
+    """
+    Tests convergence to fixed point under contractive mapping.
+    Replaces: undefined μ-field operator
+    Validates: μ(x) = x* exists and is unique for ||μ(x) - μ(y)|| ≤ λ||x - y||, λ < 1
+    """
+    
+    def _validate_config(self) -> None:
+        assert 0 < self.config['contraction_factor'] < 1, \
+            "Contraction factor λ must be in (0,1)"
+        assert self.config['dimension'] > 0, "State dimension must be positive"
+        assert self.config['convergence_tolerance'] > 0
+    
+    def init_state(self) -> np.ndarray:
+        """Random initial point in R^n."""
+        return self.rng.standard_normal(self.config['dimension'])
+    
+    def update_rule(self, state: np.ndarray, t: int) -> np.ndarray:
+        """
+        Contractive mapping: μ(x) = A·x + b
+        where ||A|| < 1 guarantees contraction
+        """
+        A = self.config['contraction_factor'] * np.eye(self.config['dimension'])
+        b = self.config.get('translation', np.zeros(self.config['dimension']))
+        return A @ state + b
+    
+    def measure_observables(self, state: np.ndarray) -> Dict[str, float]:
+        """Track convergence metrics."""
+        fixed_point = self.config.get('known_fixed_point')
+        if fixed_point is None:
+            # Estimate fixed point as (I - A)^{-1} b
+            A = self.config['contraction_factor'] * np.eye(self.config['dimension'])
+            b = self.config.get('translation', np.zeros(self.config['dimension']))
+            fixed_point = np.linalg.solve(np.eye(len(A)) - A, b)
+        
+        return {
+            'distance_to_fixed_point': np.linalg.norm(state - fixed_point),
+            'state_norm': np.linalg.norm(state),
+            'state_x0': state[0]  # Track first component
+        }
+    
+    def check_falsification(self, observables: Dict[str, float]) -> bool:
+        """
+        Falsification criterion: distance should monotonically decrease.
+        If distance increases beyond tolerance, mapping is not contractive.
+        """
+        if not hasattr(self, '_prev_distance'):
+            self._prev_distance = observables['distance_to_fixed_point']
+            return False
+        
+        current = observables['distance_to_fixed_point']
+        increased = current > self._prev_distance * (1 + self.config['convergence_tolerance'])
+        self._prev_distance = current
+        
+        return increased
+
+# Configuration
+config_fixed_point = {
+    'theorem_id': 1,
+    'theorem_name': 'Banach Fixed-Point Convergence',
+    'dimension': 3,
+    'contraction_factor': 0.8,
+    'translation': np.array([1.0, 0.5, -0.3]),
+    'convergence_tolerance': 0.01,
+    'n_steps': 50
+}
+
+# Run
+sim = FixedPointSimulation(config_fixed_point, seed=42)
+result = sim.run(n_steps=50)
+print(f"Validation: {result.validation_status}")
+print(f"Final distance to fixed point: {result.statistics['distance_to_fixed_point_final']:.6f}")
+```
+
+### **2.2 Template 2: Percolation Threshold (Phase Transitions)**
+
+**Mathematical Basis:** Bond percolation on 2D/3D lattice.
+
+```python
+import numpy as np
+from scipy.ndimage import label
+
+class PercolationSimulation(BaseSimulation):
+    """
+    Tests emergence of spanning cluster at critical probability p_c.
+    Replaces: vague "Phase 7 at 70% coherence"
+    Validates: p_c ≈ 0.59 (square lattice) or 0.31 (cubic lattice)
+    """
+    
+    def _validate_config(self) -> None:
+        assert self.config['lattice_size'] > 10, "Lattice too small for finite-size scaling"
+        assert 0 <= self.config['bond_probability'] <= 1
+        assert self.config['lattice_dim'] in [2, 3], "Only 2D/3D supported"
+    
+    def init_state(self) -> np.ndarray:
+        """Create lattice with bonds activated at probability p."""
+        shape = [self.config['lattice_size']] * self.config['lattice_dim']
+        return self.rng.random(shape) < self.config['bond_probability']
+    
+    def update_rule(self, state: np.ndarray, t: int) -> np.ndarray:
+        """Static model—no temporal evolution."""
+        return state  # Percolation is snapshot-based
+    
+    def measure_observables(self, state: np.ndarray) -> Dict[str, float]:
+        """Measure cluster statistics."""
+        labeled_array, num_clusters = label(state)
+        
+        if num_clusters == 0:
+            return {
+                'largest_cluster_size': 0,
+                'percolation_strength': 0.0,
+                'num_clusters': 0,
+                'spanning_cluster_exists': 0.0
+            }
+        
+        cluster_sizes = [
+            np.sum(labeled_array == i) 
+            for i in range(1, num_clusters + 1)
+        ]
+        largest = max(cluster_sizes)
+        lattice_size = self.config['lattice_size'] ** self.config['lattice_dim']
+        
+        # Check if largest cluster spans lattice
+        spanning = self._check_spanning(labeled_array, largest)
+        
+        return {
+            'largest_cluster_size': largest,
+            'percolation_strength': largest / lattice_size,
+            'num_clusters': num_clusters,
+            'spanning_cluster_exists': float(spanning)
+        }
+    
+    def _check_spanning(self, labeled: np.ndarray, cluster_label: int) -> bool:
+        """Check if cluster touches opposite boundaries."""
+        if self.config['lattice_dim'] == 2:
+            # Check if cluster connects top to bottom
+            top_labels = set(labeled[0, :])
+            bottom_labels = set(labeled[-1, :])
+            return bool(top_labels & bottom_labels & {cluster_label})
+        else:  # 3D
+            # Check any axis
+            for axis in range(3):
+                front = set(np.take(labeled, 0, axis=axis).flat)
+                back = set(np.take(labeled, -1, axis=axis).flat)
+                if front & back & {cluster_label}:
+                    return True
+            return False
+    
+    def check_falsification(self, observables: Dict[str, float]) -> bool:
+        """
+        Falsification: if p >> p_c, must have spanning cluster.
+        If p = 0.8 and no spanning cluster, model fails.
+        """
+        p = self.config['bond_probability']
+        theoretical_pc = 0.59 if self.config['lattice_dim'] == 2 else 0.31
+        
+        if p > theoretical_pc + 0.2:  # Well above threshold
+            return observables['spanning_cluster_exists'] < 0.5
+        return False
+
+# Sweep over bond probabilities
+def run_percolation_sweep():
+    results = []
+    for p in np.linspace(0.4, 0.8, 20):
+        config = {
+            'theorem_id': 7,
+            'theorem_name': 'Percolation Phase Transition',
+            'lattice_size': 100,
+            'lattice_dim': 2,
+            'bond_probability': p,
+            'n_steps': 1  # Single snapshot
+        }
+        
+        # Run 50 trials per probability
+        sim = PercolationSimulation(config, seed=42)
+        trials = sim.run_ensemble(n_trials=50)
+        
+        avg_strength = np.mean([
+            t.statistics['percolation_strength_final'] 
+            for t in trials
+        ])
+        results.append({'p': p, 'strength': avg_strength})
+    
+    return results
+
+# Estimate p_c from inflection point
+import pandas as pd
+sweep_data = run_percolation_sweep()
+df = pd.DataFrame(sweep_data)
+# Find p where strength ≈ 0.5 (midpoint of transition)
+p_c_estimate = df.loc[(df['strength'] - 0.5).abs().idxmin(), 'p']
+print(f"Estimated p_c = {p_c_estimate:.3f} (expected ≈0.59 for 2D square)")
+```
+
+### **2.3 Template 3: Kuramoto Synchronization (Collective Dynamics)**
+
+**Mathematical Basis:** Phase oscillator model with global coupling.
+
+```python
+class KuramotoSimulation(BaseSimulation):
+    """
+    Tests emergence of synchronization at critical coupling K_c.
+    Replaces: undefined "collective intelligence" or "resonance"
+    Validates: r (order parameter) transitions from 0 → 1 at K_c
+    """
+    
+    def _validate_config(self) -> None:
+        assert self.config['n_oscillators'] > 10
+        assert self.config['coupling_strength'] >= 0
+        assert self.config['dt'] > 0 and self.config['dt'] < 0.1
+    
+    def init_state(self) -> Dict[str, np.ndarray]:
+        """Initialize phases and natural frequencies."""
+        n = self.config['n_oscillators']
+        return {
+            'theta': self.rng.uniform(0, 2*np.pi, n),  # Random initial phases
+            'omega': self.rng.standard_cauchy(n) * 0.5  # Lorentzian distribution
+        }
+    
+    def update_rule(self, state: Dict[str, np.ndarray], t: int) -> Dict[str, np.ndarray]:
+        """
+        Kuramoto equation: dθ_i/dt = ω_i + (K/N) Σ_j sin(θ_j - θ_i)
+        """
+        theta = state['theta']
+        omega = state['omega']
+        K = self.config['coupling_strength']
+        N = self.config['n_oscillators']
+        dt = self.config['dt']
+        
+        # Compute pairwise phase differences
+        phase_diff = theta[:, None] - theta[None, :]  # Broadcasting
+        coupling_term = (K / N) * np.sum(np.sin(phase_diff), axis=1)
+        
+        # Euler integration
+        theta_new = theta + dt * (omega + coupling_term)
+        theta_new = np.mod(theta_new, 2*np.pi)  # Keep in [0, 2π)
+        
+        return {'theta': theta_new, 'omega': omega}
+    
+    def measure_observables(self, state: Dict[str, np.ndarray]) -> Dict[str, float]:
+        """Compute Kuramoto order parameter."""
+        theta = state['theta']
+        
+        # Order parameter r = |⟨e^{iθ}⟩|
+        complex_order = np.mean(np.exp(1j * theta))
+        r = np.abs(complex_order)
+        psi = np.angle(complex_order)
+        
+        return {
+            'order_parameter_r': r,
+            'phase_coherence': np.cos(theta - psi).mean(),  # Alternative metric
+            'frequency_std': np.std(state['omega'])
+        }
+    
+    def check_falsification(self, observables: Dict[str, float]) -> bool:
+        """
+        Falsification: For K >> K_c, must have r > 0.9.
+        Theoretical K_c ≈ 2/(πg(0)) where g is frequency distribution density at 0.
+        For Lorentzian with width γ, K_c ≈ 2γ.
+        """
+        K = self.config['coupling_strength']
+        gamma = 0.5  # Width of Cauchy distribution
+        K_c_theoretical = 2 * gamma
+        
+        if K > 2 * K_c_theoretical:  # Well above threshold
+            return observables['order_parameter_r'] < 0.7
+        return False
+
+# Example: Find critical coupling
+def find_critical_coupling():
+    K_values = np.linspace(0, 3, 30)
+    r_values = []
+    
+    for K in K_values:
+        config = {
+            'theorem_id': 15,
+            'theorem_name': 'Kuramoto Synchronization Threshold',
+            'n_oscillators': 200,
+            'coupling_strength': K,
+            'dt': 0.01,
+            'n_steps': 1000  # Allow transient to decay
+        }
+        
+        sim = KuramotoSimulation(config, seed=42)
+        result = sim.run(n_steps=1000)
+        r_values.append(result.statistics['order_parameter_r_final'])
+    
+    # Find K where r crosses 0.5
+    r_array = np.array(r_values)
+    idx = np.where(r_array > 0.5)[0]
+    K_c_estimated = K_values[idx[0]] if len(idx) > 0 else None
+    
+    print(f"Estimated K_c = {K_c_estimated:.3f} (expected ≈1.0 for γ=0.5)")
+    return K_values, r_values
+```
+
+---
+
+## **Week 3-4: Distributed Systems Simulations**
+
+### **3.1 CRDT Consistency Validation**
+
+**Mathematical Basis:** Commutative Replicated Data Types (eventual consistency proof).
+
+```python
+from typing import Set, Tuple, Any
+from dataclasses import dataclass, field
+
+@dataclass
+class CRDTState:
+    """State-based CRDT (G-Set: grow-only set)."""
+    elements: Set[Any] = field(default_factory=set)
+    version_vector: Dict[int, int] = field(default_factory=dict)
+    
+    def add(self, element: Any, replica_id: int):
+        """Local addition (commutative operation)."""
+        self.elements.add(element)
+        self.version_vector[replica_id] = self.version_vector.get(replica_id, 0) + 1
+    
+    def merge(self, other: 'CRDTState') -> 'CRDTState':
+        """Merge operator (associative, commutative, idempotent)."""
+        merged_elements = self.elements | other.elements
+        merged_vector = {
+            k: max(self.version_vector.get(k, 0), other.version_vector.get(k, 0))
+            for k in set(self.version_vector) | set(other.version_vector)
+        }
+        return CRDTState(merged_elements, merged_vector)
+
+class CRDTSimulation(BaseSimulation):
+    """
+    Tests eventual consistency in distributed system.
+    Validates: All replicas converge to same state despite message reordering.
+    """
+    
+    def _validate_config(self) -> None:
+        assert self.config['n_replicas'] >= 2
+        assert 0 <= self.config['network_delay_prob'] <= 1
+        assert self.config['n_operations'] > 0
+    
+    def init_state(self) -> Dict[int, CRDTState]:
+        """Initialize n replicas with empty state."""
+        return {i: CRDTState() for i in range(self.config['n_replicas'])}
+    
+    def update_rule(
+        self, 
+        state: Dict[int, CRDTState], 
+        t: int
+    ) -> Dict[int, CRDTState]:
+        """
+        Simulate:
+        1. Random replica performs add operation
+        2. Broadcast to others with probabilistic delay
+        3. Perform merges
+        """
+        n = self.config['n_replicas']
+        
+        # Random replica adds element
+        source = self.rng.integers(0, n)
+        element = f"elem_{t}_{source}"
+        state[source].add(element, source)
+        
+        # Broadcast with delays
+        for target in range(n):
+            if target != source:
+                # Simulate network delay/reordering
+                if self.rng.random() > self.config['network_delay_prob']:
+                    state[target] = state[target].merge(state[source])
+        
+        return state
+    
+    def measure_observables(self, state: Dict[int, CRDTState]) -> Dict[str, float]:
+        """Measure convergence and consistency."""
+        all_elements = [s.elements for s in state.values()]
+        
+        # Check if all replicas have same state
+        converged = all(s == all_elements[0] for s in all_elements)
+        
+        # Measure divergence
+        max_size = max(len(s) for s in all_elements)
+        min_size = min(len(s) for s in all_elements)
+        divergence = max_size - min_size
+        
+        return {
+            'converged': float(converged),
+            'max_set_size': max_size,
+            'divergence': divergence,
+            'avg_set_size': np.mean([len(s) for s in all_elements])
+        }
+    
+    def check_falsification(self, observables: Dict[str, float]) -> bool:
+        """
+        Falsification: After sufficient time, must converge.
+        If divergence persists after 2x n_operations, CRDT property violated.
+        """
+        if not hasattr(self, '_steps_elapsed'):
+            self._steps_elapsed = 0
+        self._steps_elapsed += 1
+        
+        # Allow 2x operations for propagation
+        if self._steps_elapsed > 2 * self.config['n_operations']:
+            return observables['divergence'] > 0
+        return False
+```
+
+### **3.2 Byzantine Fault Tolerance Simulation**
+
+```python
+from enum import Enum
+
+class NodeType(Enum):
+    HONEST = 1
+    BYZANTINE = 2
+
+class ByzantineConsensusSimulation(BaseSimulation):
+    """
+    Validates: n ≥ 3f + 1 requirement for Byzantine agreement.
+    Tests: System reaches consensus despite f faulty nodes.
+    """
+    
+    def _validate_config(self) -> None:
+        n = self.config['n_nodes']
+        f = self.config['n_byzantine']
+        assert n >= 3 * f + 1, f"Need n ≥ 3f+1, got n={n}, f={f}"
+    
+    def init_state(self) -> Dict[str, Any]:
+        """Initialize nodes with random initial values."""
+        n = self.config['n_nodes']
+        f = self.config['n_byzantine']
+        
+        # Assign node types
+        node_types = [NodeType.BYZANTINE] * f + [NodeType.HONEST] * (n - f)
+        self.rng.shuffle(node_types)
+        
+        # Random initial proposals (0 or 1)
+        proposals = self.rng.integers(0, 2, size=n)
+        
+        return {
+            'node_types': node_types,
+            'proposals': proposals,
+            'committed': [False] * n,
+            'round': 0
+        }
+    
+    def update_rule(self, state: Dict[str, Any], t: int) -> Dict[str, Any]:
+        """
+        Simplified PBFT-like protocol:
+        1. Nodes broadcast votes
+        2. Count votes (Byzantine nodes send random)
+        3. Commit if >2f+1 votes received
+        """
+        n = self.config['n_nodes']
+        f = self.config['n_byzantine']
+        
+        # Collect votes
+        votes = []
+        for i in range(n):
+            if state['node_types'][i] == NodeType.HONEST:
+                votes.append(state['proposals'][i])
+            else:
+                # Byzantine: send random vote
+                votes.append(self.rng.integers(0, 2))
+        
+        # Count votes for each value
+        vote_counts = {0: votes.count(0), 1: votes.count(1)}
+        
+        # Honest nodes commit if >2f+1 votes for same value
+        threshold = 2 * f + 1
+        for i in range(n):
+            if state['node_types'][i] == NodeType.HONEST:
+                for value, count in vote_counts.items():
+                    if count > threshold:
+                        state['proposals'][i] = value
+                        state['committed'][i] = True
+        
+        state['round'] += 1
+        return state
+    
+    def measure_observables(self, state: Dict[str, Any]) -> Dict[str, float]:
+        """Check consensus among honest nodes."""
+        honest_indices = [
+            i for i, t in enumerate(state['node_types']) 
+            if t == NodeType.HONEST
+        ]
+        honest_proposals = [state['proposals'][i] for i in honest_indices]
+        honest_committed = [state['committed'][i] for i in honest_indices]
+        
+        # Check if all honest nodes agreed
+        if len(set(honest_proposals)) == 1:
+            agreement = 1.0
+            agreed_value = honest_proposals[0]
+        else:
+            agreement = 0.0
+            agreed_value = -1
+        
+        return {
+            'honest_agreement': agreement,
+            'fraction_committed': np.mean(honest_committed),
+            'consensus_round': state['round'],
+            'agreed_value': agreed_value
+        }
+    
+    def check_falsification(self, observables: Dict[str, float]) -> bool:
+        """
+        Falsification: If rounds exceed threshold and no consensus, protocol failed.
+        Theoretical bound: O(f) rounds for PBFT.
+        """
+        max_rounds = 5 * self.config['n_byzantine'] + 10
+        if observables['consensus_round'] > max_rounds:
+            return observables['honest_agreement'] < 1.0
+        return False
+```
+
+---
+
+## **Week 5: Integration and Cross-Theorem Validation**
+
+### **5.1 Cross-Theorem Consistency Tests**
+
+```python
+import pytest
+from typing import List
+from simulations.theorem_01_fixed_point.model import FixedPointSimulation
+from simulations.theorem_07_percolation.model import PercolationSimulation
+
+def test_fixed_point_reproduces_across_dimensions():
+    """Verify fixed-point behavior is dimension-independent."""
+    base_config = {
+        'theorem_id': 1,
+        'theorem_name': 'Fixed-Point Test',
+        'contraction_factor': 0.7,
+        'convergence_tolerance': 0.01,
+        'n_steps': 100
+    }
+    
+    dimensions = [2, 5, 10, 50]
+    final_distances = []
+    
+    for dim in dimensions:
+        config = {**base_config, 'dimension': dim}
+        sim = FixedPointSimulation(config, seed=42)
+        result = sim.run(n_steps=100)
+        final_distances.append(
+            result.statistics['distance_to_fixed_point_final']
+        )
+    
+    # All should converge to near-zero
+    assert all(d < 1e-6 for d in final_distances), \
+        "Fixed-point convergence failed in some dimension"
+    
+    # Convergence rate should be consistent
+    assert np.std(final_distances) < 1e-6, \
+        "Convergence inconsistent across dimensions"
+
+def test_percolation_threshold_consistency():
+    """Verify p_c estimates converge with system size."""
+    sizes = [50, 100, 200]
+    p_c_estimates = []
+    
+    for size in sizes:
+        # Run sweep
+        results = []
+        for p in np.linspace(0.5, 0.7, 20):
+            config = {
+                'theorem_id': 7,
+                'theorem_name': 'Percolation Test',
+                'lattice_size': size,
+                'lattice_dim': 2,
+                'bond_probability': p,
+                'n_steps': 1
+            }
+            sim = PercolationSimulation(config, seed=42)
+            trials = sim.run_ensemble(n_trials=30)
+            avg_strength = np.mean([
+                t.statistics['percolation_strength_final'] 
+                for t in trials
+            ])
+            results.append({'p': p, 'strength': avg_strength})
+        
+        # Find crossing point
+        df = pd.DataFrame(results)
+        p_c = df.loc[(df['strength'] - 0.5).abs().idxmin(), 'p']
+        p_c_estimates.append(p_c)
+    
+    # Should converge to theoretical value (0.59 for 2D square)
+    assert 0.55 < p_c_estimates[-1] < 0.63, \
+        f"p_c estimate {p_c_estimates[-1]} outside expected range"
+    
+    # Should improve with size (decreasing variance)
+    variances = [np.var(p_c_estimates[:i+1]) for i in range(len(sizes))]
+    assert variances[-1] < variances[0], \
+        "Estimates not converging with system size"
+
+def test_kuramoto_order_parameter_bounds():
+    """Order parameter must satisfy 0 ≤ r ≤ 1."""
+    config = {
+        'theorem_id': 15,
+        'theorem_name': 'Kuramoto Bounds Test',
+        'n_oscillators': 100,
+        'coupling_strength': 2.0,
+        'dt': 0.01,
+        'n_steps': 500
+    }
+    
+    sim = KuramotoSimulation(config, seed=42)
+    result = sim.run(n_steps=500)
+    
+    # Check all trajectory values
+    r_values = result.observables['order_parameter_r']
+    assert np.all((r_values >= 0) & (r_values <= 1)), \
+        "Order parameter violated bound [0,1]"
+```
+
+### **5.2 Reproducibility Test Suite**
+
+```python
+def test_deterministic_reproducibility():
+    """Same seed must produce identical results."""
+    config = {
+        'theorem_id': 1,
+        'theorem_name': 'Reproducibility Test',
+        'dimension': 5,
+        'contraction_factor': 0.8,
+        'convergence_tolerance': 0.01,
+        'n_steps': 100
+    }
+    
+    # Run twice with same seed
+    sim1 = FixedPointSimulation(config, seed=42)
+    result1 = sim1.run(n_steps=100)
+    
+    sim2 = FixedPointSimulation(config, seed=42)
+    result2 = sim2.run(n_steps=100)
+    
+    # Compare all observables
+    for key in result1.observables:
+        np.testing.assert_array_equal(
+            result1.observables[key],
+            result2.observables[key],
+            err_msg=f"Observable {key} not reproducible"
+        )
+
+def test_ensemble_statistics_stability():
+    """Ensemble means should be stable across re-runs."""
+    config = {
+        'theorem_id': 7,
+        'theorem_name': 'Ensemble Stability',
+        'lattice_size': 50,
+        'lattice_dim': 2,
+        'bond_probability': 0.6,
+        'n_steps': 1
+    }
+    
+    # Two ensemble runs
+    sim = PercolationSimulation(config, seed=42)
+    ensemble1 = sim.run_ensemble(n_trials=100)
+    ensemble2 = sim.run_ensemble(n_trials=100)  # Different seeds due to increment
+    
+    mean1 = np.mean([r.statistics['percolation_strength_final'] for r in ensemble1])
+    mean2 = np.mean([r.statistics['percolation_strength_final'] for r in ensemble2])
+    
+    # Should agree within statistical error (~1/√N)
+    expected_error = 1 / np.sqrt(100)
+    assert abs(mean1 - mean2) < 3 * expected_error, \
+        f"Ensemble means diverged: {mean1:.4f} vs {mean2:.4f}"
+```
+
+---
+
+## **Week 6: Finalization and Documentation**
+
+### **6.1 Automated Report Generation**
+
+```python
+from dataclasses import asdict
+import json
+from pathlib import Path
+
+class SimulationReporter:
+    """Generate structured reports for each theorem."""
+    
+    def __init__(self, output_dir: str = "results/reports"):
+        self.output_dir = Path(output_dir)
+        self.output_dir.mkdir(parents=True, exist_ok=True)
+    
+    def generate_theorem_report(
+        self, 
+        results: List[SimulationResult],
+        theorem_id: int
+    ) -> Path:
+        """Create comprehensive theorem validation report."""
+        
+        # Aggregate statistics across ensemble
+        all_stats = [r.statistics for r in results]
+        summary = {
+            'theorem_id': theorem_id,
+            'n_trials': len(results),
+            'validation_status': self._aggregate_status(results),
+            'falsification_rate': np.mean([r.falsification_triggered for r in results]),
+            'mean_runtime': np.mean([r.runtime_seconds for r in results]),
+            'statistics': {}
+        }
+        
+        # Compute ensemble statistics
+        for key in all_stats[0].keys():
+            values = [s[key] for s in all_stats]
+            summary['statistics'][key] = {
+                'mean': float(np.mean(values)),
+                'std': float(np.std(values)),
+                'ci_95': [
+                    float(np.percentile(values, 2.5)),
+                    float(np.percentile(values, 97.5))
+                ]
+            }
+        
+        # Save report
+        report_path = self.output_dir / f"theorem_{theorem_id:02d}_report.json"
+        with open(report_path, 'w') as f:
+            json.dump(summary, f, indent=2)
+        
+        # Generate plots
+        self._generate_plots(results, theorem_id)
+        
+        return report_path
+    
+    def _aggregate_status(self, results: List[SimulationResult]) -> str:
+        """Determine overall validation status."""
+        statuses = [r.validation_status for r in results]
+        failures = statuses.count("FAIL")
+        
+        if failures == 0:
+            return "FULLY_VALIDATED"
+        elif failures / len(statuses) < 0.05:
+            return "PARTIALLY_VALIDATED"
+        else:
+            return "VALIDATION_FAILED"
+    
+    def _generate_plots(self, results: List[SimulationResult], theorem_id: int):
+        """Create visualization of key observables."""
+        import matplotlib.pyplot as plt
+        
+        # Example: plot first observable trajectory
+        first_obs_key = list(results[0].observables.keys())[0]
+        
+        plt.figure(figsize=(10, 6))
+        for i, result in enumerate(results[:10]):  # Plot first 10 trials
+            plt.plot(
+                result.observables[first_obs_key], 
+                alpha=0.3, 
+                color='blue'
+            )
+        
+        # Plot mean trajectory
+        all_trajectories = np.array([
+            r.observables[first_obs_key] for r in results
+        ])
+        mean_trajectory = np.mean(all_trajectories, axis=0)
+        plt.plot(mean_trajectory, color='red', linewidth=2, label='Mean')
+        
+        plt.xlabel('Time Step')
+        plt.ylabel(first_obs_key)
+        plt.title(f'Theorem {theorem_id}: {first_obs_key}')
+        plt.legend()
+        plt.grid(alpha=0.3)
+        
+        plot_path = self.output_dir / f"theorem_{theorem_id:02d}_trajectory.png"
+        plt.savefig(plot_path, dpi=150, bbox_inches='tight')
+        plt.close()
+```
+
+### **6.2 Computational Validation Summary**
+
+Generate master summary document:
+
+```python
+def generate_master_validation_report():
+    """Aggregate all theorem reports into single summary."""
+    
+    all_reports = []
+    for theorem_id in range(1, 34):  # 33 theorems
+        report_path = Path(f"results/reports/theorem_{theorem_id:02d}_report.json")
+        if report_path.exists():
+            with open(report_path) as f:
+                all_reports.append(json.load(f))
+    
+    # Compute global metrics
+    validation_statuses = [r['validation_status'] for r in all_reports]
+    
+    master_summary = {
+        'total_theorems': 33,
+        'validated_count': validation_statuses.count('FULLY_VALIDATED'),
+        'partially_validated_count': validation_statuses.count('PARTIALLY_VALIDATED'),
+        'failed_count': validation_statuses.count('VALIDATION_FAILED'),
+        'overall_validation_rate': validation_statuses.count('FULLY_VALIDATED') / 33,
+        'mean_falsification_rate': np.mean([r['falsification_rate'] for r in all_reports]),
+        'total_runtime_hours': sum(r['mean_runtime'] for r in all_reports) / 3600,
+        'theorem_details': all_reports
+    }
+    
+    with open('results/MASTER_VALIDATION_SUMMARY.json', 'w') as f:
+        json.dump(master_summary, f, indent=2)
+    
+    # Generate markdown report
+    generate_markdown_summary(master_summary)
+    
+    return master_summary
+
+def generate_markdown_summary(summary: Dict):
+    """Human-readable report."""
+    md = f"""# 33-Theorem Framework: Computational Validation Summary
+
+## Overview
+- **Total Theorems:** {summary['total_theorems']}
+- **Fully Validated:** {summary['validated_count']} ({summary['overall_validation_rate']*100:.1f}%)
+- **Partially Validated:** {summary['partially_validated_count']}
+- **Validation Failed:** {summary['failed_count']}
+
+## Execution Metrics
+- **Mean Falsification Rate:** {summary['mean_falsification_rate']*100:.2f}%
+- **Total Computation Time:** {summary['total_runtime_hours']:.2f} hours
+
+## Theorem Status
+
+| ID | Name | Status | Falsification Rate | Runtime (s) |
+|----|------|--------|-------------------|-------------|
+"""
+    
+    for theorem in summary['theorem_details']:
+        md += f"| {theorem['theorem_id']} | Theorem {theorem['theorem_id']} | "
+        md += f"{theorem['validation_status']} | "
+        md += f"{theorem['falsification_rate']*100:.1f}% | "
+        md += f"{theorem['mean_runtime']:.2f} |\n"
+    
+    with open('results/VALIDATION_SUMMARY.md', 'w') as f:
+        f.write(md)
+```
+
+---
+
+## **Critical Success Criteria (Phase 3 Completion)**
+
+Phase 3 is complete when:
+
+| Criterion | Target | Verification Method |
+|-----------|--------|---------------------|
+| **Simulation Coverage** | ≥ 30/33 theorems | Count of implemented simulation modules |
+| **Reproducibility** | 100% | All simulations pass deterministic seed test |
+| **Falsifiability** | 100% | Every simulation has `check_falsification()` implemented |
+| **Validation Rate** | ≥ 80% | Fraction of theorems passing ensemble tests |
+| **Statistical Rigor** | 95% CI on all metrics | All reports include confidence intervals |
+| **Cross-Theorem Consistency** | ≥ 0.85 coherence | Cross-validation test suite passes |
+| **Documentation Complete** | 100% | Every module has README + config + test |
+| **Performance** | < 24h total runtime | All 33 theorems run on single workstation |
+
+---
+
+## **Edge Cases and Mitigation**
+
+### **Numerical Instability**
+- **Risk:** Floating-point errors accumulate in long simulations
+- **Mitigation:** Use `np.float64` everywhere, add stability checks in `update_rule()`
+
+### **Stochastic Variance**
+- **Risk:** Random effects obscure true behavior
+- **Mitigation:** Require n_trials ≥ 30 per condition, report 95% CI
+
+### **Unfalsifiable Theorems**
+- **Risk:** Some constructs may be inherently untestable
+- **Mitigation:** Mark as "Theoretical Framework Only" and exclude from validation metrics
+
+### **Circular Validation**
+- **Risk:** Simulation assumes what it tests
+- **Mitigation:** Independent cross-domain checks (compare numerical to analytical where possible)
+
+### **Computational Cost**
+- **Risk:** Some simulations may require HPC resources
+- **Mitigation:** Implement coarse-grained versions first, flag expensive ones for deferred execution
+
+---
+
+## **Final Deliverable Checklist**
+
+```bash
+# Directory structure verification
+├── simulations/
+│   ├── theorem_01/ ✓
+│   ├── theorem_02/ ✓
+│   ├── ...
+│   └── theorem_33/ ✓
+├── tests/
+│   ├── test_reproducibility.py ✓
+│   ├── test_falsification.py ✓
+│   └── test_cross_theorem.py ✓
+├── results/
+│   ├── reports/ ✓
+│   ├── plots/ ✓
+│   └── MASTER_VALIDATION_SUMMARY.json ✓
+├── requirements.txt ✓
+├── README.md ✓
+└── .github/workflows/ci.yml ✓
+```
+
+**Sign-off Criteria:**
+- [ ] All 33 simulation modules executable
+- [ ] `pytest` passes with 100% coverage of validation logic
+- [ ] Master report shows ≥80% validation rate
+- [ ] All code reviewed and commented
+- [ ] Documentation generated automatically from docstrings
+
+**Upon completion, Phase 3 outputs feed directly into external peer validation (Phase 5).**
