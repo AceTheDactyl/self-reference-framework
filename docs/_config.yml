@@ -1,0 +1,17 @@
+# GitHub Pages config
+# Choose a built-in theme
+theme: jekyll-theme-cayman
+
+# Site settings
+title: Self-Reference Framework (Corrected)
+description: Publication-ready framework, tutorials, and reproducibility materials
+
+markdown: kramdown
+kramdown:
+  input: GFM
+  hard_wrap: false
+
+# Keep these as static assets
+include:
+  - tutorials
+  - submissions

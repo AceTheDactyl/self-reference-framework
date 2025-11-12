@@ -1,0 +1,2 @@
+Project completion: From speculation to science (~50% validated).
+Deliverables: Paper, supplements, reproducibility package, tutorials, arXiv/Zenodo prep.
