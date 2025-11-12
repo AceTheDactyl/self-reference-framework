@@ -1,17 +1,24 @@
-# GitHub Pages config
-# Choose a built-in theme
-theme: jekyll-theme-cayman
+# GitHub Pages config for a richer docs site
+# Use Just the Docs with sidebar navigation
+remote_theme: just-the-docs/just-the-docs
 
-# Site settings
 title: Self-Reference Framework (Corrected)
 description: Publication-ready framework, tutorials, and reproducibility materials
+
+search_enabled: true
 
 markdown: kramdown
 kramdown:
   input: GFM
   hard_wrap: false
 
-# Keep these as static assets
+aux_links:
+  GitHub Repository: https://github.com/AceTheDactyl/self-reference-framework
+
+nav_external_links:
+  - title: Tutorials (HTML)
+    url: /tutorials/
+
 include:
   - tutorials
   - submissions

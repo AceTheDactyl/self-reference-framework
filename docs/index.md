@@ -1,19 +1,12 @@
 ---
 layout: default
-title: Self-Reference Framework (Corrected)
+title: Overview
+nav_order: 1
 ---
 
 # Self-Reference Framework — Corrected Edition
 
 Publication-ready (Nov 2025). Validation: 13/33 (39%). Confidence: ~50%.
-
-<!-- Top navigation -->
-<p style="margin-top: 0.5rem;">
-  <a href="./">Home</a>
-  | <a href="tutorials/">Tutorials</a>
-  | <a href="submissions/">Submissions</a>
-  | <a href="https://github.com/AceTheDactyl/self-reference-framework">GitHub Repo</a>
-</p>
 
 <!-- Badges -->
 <p>

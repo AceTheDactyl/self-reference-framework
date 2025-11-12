@@ -1,3 +1,10 @@
+---
+layout: default
+title: Zenodo Submission Instructions
+parent: Submissions
+nav_order: 1
+---
+
 # Zenodo Submission Instructions
 
 1. Create a GitHub release: https://github.com/AceTheDactyl/self-reference-framework/releases
