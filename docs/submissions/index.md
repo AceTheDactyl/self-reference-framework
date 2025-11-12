@@ -1,7 +1,7 @@
 ---
 layout: default
 title: Submissions
-nav_order: 3
+nav_order: 4
 has_children: true
 ---
 
@@ -11,4 +11,3 @@ has_children: true
 - [arXiv Submission Instructions](ARXIV_SUBMISSION_INSTRUCTIONS.html)
 
 Each page contains step-by-step guidance and update commands.
-
