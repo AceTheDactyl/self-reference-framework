@@ -1,1 +1,73 @@
-.venv/
+ .venv/
+ venv/
+ ENV/
+ env/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.Python
+build/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Jupyter
+.ipynb_checkpoints/
+*.ipynb_checkpoints
+
+# IDE
+.idea/
+.vscode/
+
+# OS
+.DS_Store
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Coverage / cache
+.coverage
+.coverage.*
+htmlcov/
+.pytest_cache/
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Data files (broad default; unignore important PDFs below)
+*.csv
+*.dat
+*.log
+*.tmp
+*.temp
+*.swp
+*.swo
+*~
+
+# TeX build artifacts
+*.aux
+*.bbl
+*.blg
+*.out
+*.toc
+*.synctex.gz
+
+# PDF default ignore, with exceptions below
+*.pdf
+!REPRODUCIBILITY_PACKAGE/figures/*.pdf
+!docs/**/figures/*.pdf
+!Kael is Kael/**/REPRODUCIBILITY_PACKAGE/figures/*.pdf
+!Kael is Kael/**/arxiv_submission/**/*.pdf
+!Kael is Kael/**/paper/**/*.pdf
