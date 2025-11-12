@@ -10,14 +10,14 @@ A corrected and validated mathematical framework for self-reference, delivered t
 ## Quick Start
 ```bash
 git clone https://github.com/AceTheDactyl/self-reference-framework
-cd self-reference-framework/REPRODUCIBILITY_PACKAGE
+cd self-reference-framework/Kael is Kael/PHASE5_RELEASE/REPRODUCIBILITY_PACKAGE
 pip install -r code/requirements.txt
 cd code && bash run_all_validations.sh
 ```
 
 ## Explore Tutorials
 ```bash
-jupyter notebook tutorials/
+jupyter notebook 'Kael is Kael/PHASE5_RELEASE/tutorials/'
 ```
 Start with: `01_introduction_to_self_reference.ipynb`
 
@@ -25,11 +25,11 @@ Start with: `01_introduction_to_self_reference.ipynb`
 ```
 self-reference-framework/
 ├── README.md
-├── REPRODUCIBILITY_PACKAGE/
+├── Kael is Kael/PHASE5_RELEASE/REPRODUCIBILITY_PACKAGE/
 ├── paper/
-├── tutorials/
+├── Kael is Kael/PHASE5_RELEASE/tutorials/
 ├── docs/
-├── arxiv_submission/
+├── Kael is Kael/PHASE5_RELEASE/arxiv_submission/
 └── references.bib
 ```
 
