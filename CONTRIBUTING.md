@@ -59,3 +59,24 @@ bash run_all_validations.sh
 
 Suggested commit prefixes: feat:, fix:, docs:, test:, refactor:, chore:
 
+
+## 🔧 Branch Naming & Commit Messages
+
+- Branches: use descriptive prefixes
+  - `feature/add-theorem-validation`, `fix/convergence-threshold`, `docs/tutorial-clarity`, `test/increase-coverage`
+- Conventional commits:
+  - `feat: Add SR7 percolation validation`
+  - `fix: Correct SR1 convergence threshold`
+  - `docs: Update tutorial 2 examples`
+  - `test: Add unit tests for Fibonacci convergence`
+  - `refactor: Simplify Klein–Gordon solver`
+
+## ✅ Coverage Goals
+
+- Overall target: ≥80% coverage
+- Core algorithms: ≥95% coverage
+- Include edge cases and failure modes
+
+## 📄 License For Contributions
+
+By contributing, you agree your contributions are licensed under MIT (code) and CC‑BY‑4.0 (docs).

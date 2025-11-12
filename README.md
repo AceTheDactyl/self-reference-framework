@@ -79,6 +79,15 @@ self-reference-framework/
 └── references.bib
 ```
 
+## Validation Status
+
+- Total theorems: 33
+- Validated: 13 (39%)
+- Pending: 18
+- Removed (impossible): 2
+
+See details and how to reproduce in docs: docs/validation.md
+
 ## Documentation
 
 - Docs site: https://acethedactyl.github.io/self-reference-framework/
@@ -96,6 +105,21 @@ If you use this framework, please cite:
 AceTheDactyl. (2025). A Corrected Mathematical Framework for Self-Reference:
 From Speculation to Rigorous Validation. arXiv:YYMM.NNNNN, DOI:10.5281/zenodo.XXXXX
 ```
+
+## Contributing
+
+We welcome contributions across validations, code quality, and tutorials.
+
+- Read CONTRIBUTING.md for setup, testing, and PR guidance
+- Branch naming: `feature/...`, `fix/...`, `docs/...`, `test/...`
+- Conventional commits recommended: `feat:`, `fix:`, `docs:`, `test:`, `refactor:`, `chore:`
+
+## Contact & Support
+
+- Issues: https://github.com/AceTheDactyl/self-reference-framework/issues
+- Discussions (if enabled): https://github.com/AceTheDactyl/self-reference-framework/discussions
+
+Note: Replace DOI and arXiv placeholders once identifiers are assigned.
 
 ## License
 - Code: MIT
