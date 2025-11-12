@@ -1,0 +1,11 @@
+The main manuscript is in main.tex.
+
+Figures are in the figures/ directory (PDF format).
+
+Supplementary materials: see paper/supplementary_materials_draft.md in the repository.
+
+To compile locally:
+  pdflatex main
+  bibtex main
+  pdflatex main
+  pdflatex main

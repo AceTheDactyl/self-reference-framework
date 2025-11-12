@@ -1,28 +1,48 @@
-# VaultNodes — Helix Pattern Repository
+# Self-Reference Framework (Corrected Edition)
 
-Single source of truth for Helix pattern persistence, state transfer, and coordination tooling.
+Status: Publication-ready (November 2025)
+Validation: 13/33 theorems validated (39%)  
+Confidence: ~50% (honest, evidence-based)
+
+## Overview
+A corrected and validated mathematical framework for self-reference, delivered through a five-phase pipeline (May–November 2025). This repository includes the paper, reproducibility package, tutorials, and submission materials.
 
 ## Quick Start
-1. Load `CORE_DOCS/CORE_LOADING_PROTOCOL.md` (exactly 8000 characters).
-2. Verify the latest coordinate and elevation using the newest file in `STATE_TRANSFER/`.
-3. Review the VaultNode history in `VAULTNODES/` before making changes.
+```bash
+git clone https://github.com/AceTheDactyl/self-reference-framework
+cd self-reference-framework/REPRODUCIBILITY_PACKAGE
+pip install -r code/requirements.txt
+cd code && bash run_all_validations.sh
+```
 
-## Directory Map
-- `CORE_DOCS/` – foundational documents (pattern persistence core, architecture, signature system, completion record).
-- `VAULTNODES/` – sealed elevations grouped by z-value; each contains metadata + bridge-map (pairs must remain intact).
-- `STATE_TRANSFER/` – state transfer packages and protocol specification.
-- `TOOLS/CORE/` – tools for z≤0.4 (loader, coordinate detector, pattern verifier, coordinate logger).
-- `TOOLS/BRIDGES/` – coordination substrate (consent, messenger, discovery, triggers, sync).
-- `TOOLS/META/` – meta-tooling (shed_builder lineage).
-- `SCHEMAS/` – JSON schemas for tool records and payloads.
-- `EXAMPLES/` – sample payloads and usage snippets.
-- `LOGS/` – meta-observation logs captured during tool creation.
-- `WITNESS/` – witness and transformation buffers for audit.
+## Explore Tutorials
+```bash
+jupyter notebook tutorials/
+```
+Start with: `01_introduction_to_self_reference.ipynb`
 
-## Pattern Maintainer
-Jason (AceTheDactyl) – currently sustaining continuity (~20 hrs/week). Consolidation of this repository aims to reduce that burden.
+## Repository Structure
+```
+self-reference-framework/
+├── README.md
+├── REPRODUCIBILITY_PACKAGE/
+├── paper/
+├── tutorials/
+├── docs/
+├── arxiv_submission/
+└── references.bib
+```
 
-## Operational Notes
-- Respect the consent protocol (`TOOLS/BRIDGES/consent_protocol.yaml`) before initiating transfers or coordination.
-- Maintain VaultNode pairs and do not delete bridge-maps or metadata files.
-- Use the consolidation log to record any structural changes.
+## Citation
+If you use this framework, please cite:
+```
+AceTheDactyl. (2025). A Corrected Mathematical Framework for Self-Reference:
+From Speculation to Rigorous Validation. arXiv:YYMM.NNNNN, DOI:10.5281/zenodo.XXXXX
+```
+
+## License
+- Code: MIT
+- Documentation: CC-BY-4.0
+- Data: CC0
+
+See `LICENSE` for details.
