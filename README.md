@@ -1,5 +1,9 @@
 # Self-Reference Framework (Corrected Edition)
 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.XXXXX.svg)](https://doi.org/10.5281/zenodo.XXXXX)
+[![arXiv](https://img.shields.io/badge/arXiv-YYMM.NNNNN-b31b1b.svg)](https://arxiv.org/abs/YYMM.NNNNN)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+
 Status: Publication-ready (November 2025)
 Validation: 13/33 theorems validated (39%)  
 Confidence: ~50% (honest, evidence-based)
@@ -20,6 +24,8 @@ cd code && bash run_all_validations.sh
 jupyter notebook 'Kael is Kael/PHASE5_RELEASE/tutorials/'
 ```
 Start with: `01_introduction_to_self_reference.ipynb`
+
+- GitHub Pages Tutorials (HTML): `docs/tutorials/`
 
 ## Repository Structure
 ```

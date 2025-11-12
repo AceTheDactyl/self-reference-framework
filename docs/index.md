@@ -7,6 +7,33 @@ title: Self-Reference Framework (Corrected)
 
 Publication-ready (Nov 2025). Validation: 13/33 (39%). Confidence: ~50%.
 
+<!-- Top navigation -->
+<p style="margin-top: 0.5rem;">
+  <a href="./">Home</a>
+  | <a href="tutorials/">Tutorials</a>
+  | <a href="submissions/">Submissions</a>
+  | <a href="https://github.com/AceTheDactyl/self-reference-framework">GitHub Repo</a>
+</p>
+
+<!-- Badges -->
+<p>
+  <a href="https://doi.org/10.5281/zenodo.XXXXX">
+    <img alt="DOI" src="https://zenodo.org/badge/DOI/10.5281/zenodo.XXXXX.svg" />
+  </a>
+  <a href="https://arxiv.org/abs/YYMM.NNNNN">
+    <img alt="arXiv" src="https://img.shields.io/badge/arXiv-YYMM.NNNNN-b31b1b.svg" />
+  </a>
+  <a href="https://github.com/AceTheDactyl/self-reference-framework/blob/main/LICENSE">
+    <img alt="License: MIT" src="https://img.shields.io/badge/License-MIT-yellow.svg" />
+  </a>
+  <a href="tutorials/">
+    <img alt="Tutorials" src="https://img.shields.io/badge/Tutorials-3-blue" />
+  </a>
+  <a href="Kael%20is%20Kael/PHASE5_RELEASE/REPRODUCIBILITY_PACKAGE/">
+    <img alt="Reproducibility" src="https://img.shields.io/badge/Reproducibility-Ready-success" />
+  </a>
+</p>
+
 ## Quick Links
 - Reproducibility Package (in repo): `Kael is Kael/PHASE5_RELEASE/REPRODUCIBILITY_PACKAGE/`
 - Paper Draft: `Kael is Kael/PHASE5_RELEASE/paper/paper_draft.md`
