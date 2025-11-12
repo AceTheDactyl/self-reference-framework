@@ -5,6 +5,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Python 3.8+](https://img.shields.io/badge/python-3.8%2B-blue.svg)](https://www.python.org/downloads/)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+[![Docs](https://img.shields.io/badge/docs-GitHub%20Pages-blue)](https://acethedactyl.github.io/self-reference-framework/)
 
 > A Corrected Mathematical Framework for Self-Reference: From Speculation to Rigorous Validation
 
@@ -102,4 +103,3 @@ From Speculation to Rigorous Validation. arXiv:YYMM.NNNNN, DOI:10.5281/zenodo.XX
 - Data: CC0
 
 See `LICENSE` for details.
-
