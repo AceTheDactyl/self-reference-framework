@@ -15,9 +15,8 @@ kramdown:
 aux_links:
   GitHub Repository: https://github.com/AceTheDactyl/self-reference-framework
 
-nav_external_links:
-  - title: Tutorials (HTML)
-    url: /tutorials/
+plugins:
+  - jekyll-remote-theme
 
 include:
   - tutorials
